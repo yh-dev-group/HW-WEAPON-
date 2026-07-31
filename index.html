@@ -6,26 +6,30 @@
   <title>HW-WEAPON Presentation Generator</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Marpit for Slide Preview -->
-  <script src="https://cdn.jsdelivr.net/npm/@marp-team/marpit@2.4.0/lib/marpit.umd.js"></script>
+  <!-- Marked.js for Reliable Markdown Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <!-- PptxGenJS for PPTX Export -->
   <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
   <style>
-    .slide-preview section {
+    .slide-card {
       width: 100%;
       box-sizing: border-box;
       padding: 2.5rem;
       background: #0f172a;
       color: #f8fafc;
-      font-family: sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       border-radius: 12px;
       margin-bottom: 1.5rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      border: 1px solid #1e293b;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
-    .slide-preview h1 { color: #38bdf8; font-size: 2em; font-weight: bold; border-bottom: 2px solid #38bdf8; margin-bottom: 1rem; padding-bottom: 0.2rem; }
-    .slide-preview h2 { color: #38bdf8; font-size: 1.5em; margin-bottom: 0.8rem; }
-    .slide-preview p, .slide-preview li { font-size: 1.1em; margin-bottom: 0.5rem; line-height: 1.5; }
-    .slide-preview ul { list-style-type: disc; padding-left: 1.5rem; }
+    .slide-card h1 { color: #38bdf8; font-size: 1.875rem; font-weight: 800; border-bottom: 2px solid #38bdf8; margin-bottom: 1rem; padding-bottom: 0.5rem; }
+    .slide-card h2 { color: #38bdf8; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; }
+    .slide-card h3 { color: #7dd3fc; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .slide-card p, .slide-card li { font-size: 1.05rem; margin-bottom: 0.5rem; line-height: 1.6; color: #e2e8f0; }
+    .slide-card ul { list-style-type: disc; padding-left: 1.5rem; }
+    .slide-card ol { list-style-type: decimal; padding-left: 1.5rem; }
+    .slide-card strong { color: #38bdf8; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
@@ -34,7 +38,7 @@
   <header class="border-b border-slate-800 p-4 bg-slate-900 flex justify-between items-center shadow-lg">
     <div class="flex items-center gap-2">
       <h1 class="text-2xl font-black tracking-tight text-sky-400">🚀 HW-WEAPON</h1>
-      <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-0.5 rounded border border-emerald-500/20 font-medium">100% Free Unlimited AI</span>
+      <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded-full border border-emerald-500/20 font-medium">100% Free Unlimited AI</span>
     </div>
   </header>
 
@@ -78,7 +82,7 @@
         </div>
       </div>
 
-      <div id="previewArea" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-5 overflow-y-auto max-h-[600px] slide-preview">
+      <div id="previewArea" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-5 overflow-y-auto max-h-[600px]">
         <div class="text-center text-slate-500 py-24">
           <p class="text-base">Your generated presentation slides will render visually right here!</p>
         </div>
@@ -88,9 +92,9 @@
   </main>
 
   <script>
-    // Explicit global variable scope definition
+    // Global markdown storage
     window.currentRawMarkdown = "";
-    
+
     // 1. File Upload Handler
     function importFile(event) {
       const file = event.target.files[0];
@@ -103,7 +107,7 @@
       }
     }
 
-    // 2. 100% Free AI Generator Engine
+    // 2. Free AI Generator Engine (via Pollinations API)
     async function generateSlides() {
       const text = document.getElementById('inputText').value;
       const btn = document.getElementById('generateBtn');
@@ -135,13 +139,24 @@
 
         const markdownResult = await response.text();
 
-        // Save cleanly to global scope
+        // Save raw markdown and clean fence tokens
         window.currentRawMarkdown = markdownResult.replace(/```markdown/gi, '').replace(/```/g, '').trim();
 
-        // Render visual slides in preview area
-        const marpit = new window.Marpit.Marpit();
-        const { html, css } = marpit.render(window.currentRawMarkdown);
-        preview.innerHTML = `<style>${css}</style>${html}`;
+        // Render each slide card into HTML safely with marked.js
+        const slideArray = window.currentRawMarkdown.split(/^---$/m);
+        let renderedCardsHtml = "";
+
+        slideArray.forEach((slideMd, index) => {
+          if (slideMd.trim().length > 0) {
+            const slideHtml = window.marked.parse(slideMd.trim());
+            renderedCardsHtml += `<div class="slide-card">
+              <div class="text-xs font-bold text-sky-400 mb-2 uppercase tracking-wider">Slide ${index + 1}</div>
+              ${slideHtml}
+            </div>`;
+          }
+        });
+
+        preview.innerHTML = renderedCardsHtml || '<p class="text-red-400">No slides were generated. Try again.</p>';
 
       } catch (err) {
         alert('Generation failed: ' + err.message);
