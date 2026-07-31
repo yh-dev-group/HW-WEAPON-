@@ -15,12 +15,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Marp CLI
-        uses: marp-team/marp-cli-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          generate_html: true
-          generate_pdf: true
-          args: --input-dir slides --output dist --allow-local-files
+          node-version: '20'
+
+      - name: Build Slides with Marp
+        run: |
+          mkdir -p dist
+          npx @marp-team/marp-cli@latest --input-dir slides --output dist --html --allow-local-files
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
