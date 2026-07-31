@@ -20,10 +20,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build Slides with Marp
+      - name: Build Slides and Prepare Site
         run: |
           mkdir -p dist
           npx @marp-team/marp-cli@latest --input-dir slides --output dist --html --allow-local-files
+          if [ -f index.html ]; then cp index.html dist/index.html; fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
