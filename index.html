@@ -140,6 +140,13 @@
         });
 
         const data = await response.json();
+
+        // Safe error check if API key is invalid or balance is empty
+        if (!data.choices || !data.choices[0]) {
+          const errMsg = data.error ? data.error.message : JSON.stringify(data);
+          throw new Error(`API Error: ${errMsg}`);
+        }
+
         currentRawMarkdown = data.choices[0].message.content;
 
         // Render visual slides in preview area
@@ -147,7 +154,7 @@
         preview.innerHTML = `<style>${css}</style>${html}`;
 
       } catch (err) {
-        alert('Error generating slides: ' + err.message);
+        alert(err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = '✨ Generate Presentation';
