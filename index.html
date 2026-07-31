@@ -88,8 +88,8 @@
   </main>
 
   <script>
-    // --- PRE-CONFIGURED FREE DEEPSEEK API KEY ---
-    const API_KEY = "YOUR_DEEPSEEK_API_KEY_HERE"; // Paste key here once!
+    // --- PRE-CONFIGURED DEEPSEEK API KEY ---
+    const API_KEY = "sk-d5b6615eb000452aa7530833e71266bb";
 
     const marpit = new window.Marpit.Marpit();
     let currentRawMarkdown = "";
@@ -164,7 +164,6 @@
       let pptx = new PptxGenJS();
       pptx.layout = 'LAYOUT_16x9';
 
-      // Split raw markdown into individual slides
       const slideTexts = currentRawMarkdown.split(/^---$/m);
 
       slideTexts.forEach(slideMd => {
@@ -172,7 +171,6 @@
         if (lines.length === 0) return;
 
         let slide = pptx.addSlide();
-        // Set slide dark background
         slide.background = { color: '0F172A' };
 
         let yPosition = 0.8;
@@ -180,7 +178,6 @@
         lines.forEach(line => {
           line = line.trim();
           if (line.startsWith('#')) {
-            // Heading line
             const titleText = line.replace(/^#+\s*/, '');
             slide.addText(titleText, {
               x: 0.8, y: yPosition, w: '85%',
@@ -189,7 +186,6 @@
             });
             yPosition += 0.9;
           } else if (line.startsWith('-') || line.startsWith('*')) {
-            // Bullet point line
             const bulletText = line.replace(/^[-*]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1');
             slide.addText(bulletText, {
               x: 1.0, y: yPosition, w: '80%',
@@ -198,7 +194,6 @@
             });
             yPosition += 0.5;
           } else {
-            // Standard body text
             const cleanText = line.replace(/\*\*(.*?)\*\*/g, '$1');
             slide.addText(cleanText, {
               x: 0.8, y: yPosition, w: '85%',
@@ -210,7 +205,6 @@
         });
       });
 
-      // Save PowerPoint file
       pptx.writeFile({ fileName: 'HW-WEAPON-Presentation.pptx' });
     }
   </script>
