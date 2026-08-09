@@ -57,13 +57,7 @@
         </label>
       </div>
 
-      <!-- Free API Key Field -->
-      <div class="flex flex-col gap-1">
-        <label for="apiKeyInput" class="text-xs text-slate-400 font-medium">Free OpenRouter API Key (Get free key at openrouter.ai):</label>
-        <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 text-slate-200">
-      </div>
-
-      <textarea id="inputText" placeholder="Type your topic, paste your assignment, or import a text file..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-sky-500 resize-none min-h-[300px] leading-relaxed"></textarea>
+      <textarea id="inputText" placeholder="Type your topic, paste your assignment, or import a text file..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-sky-500 resize-none min-h-[350px] leading-relaxed"></textarea>
       
       <button id="generateBtn" onclick="generateSlides()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition-all text-base shadow-lg shadow-sky-500/20">
         ✨ Generate Presentation
@@ -98,10 +92,10 @@
   </main>
 
   <script>
-    window.currentRawMarkdown = "";
+    // Embedded OpenRouter API Key
+    const OPENROUTER_API_KEY = "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";
 
-    // Load saved key from localStorage
-    document.getElementById('apiKeyInput').value = localStorage.getItem('openrouter_key') || "";
+    window.currentRawMarkdown = "";
 
     // 1. File Upload Handler
     function importFile(event) {
@@ -115,37 +109,29 @@
       }
     }
 
-    // 2. Free AI Generator Engine (via OpenRouter Free Tier Models)
+    // 2. Free AI Generator Engine (via OpenRouter Free Auto-Router)
     async function generateSlides() {
       const text = document.getElementById('inputText').value;
-      const apiKey = document.getElementById('apiKeyInput').value.trim();
       const btn = document.getElementById('generateBtn');
       const preview = document.getElementById('previewArea');
-
-      if (!apiKey) {
-        alert('Please enter a free OpenRouter key! Get one instantly at openrouter.ai/keys');
-        return;
-      }
 
       if (!text.trim()) {
         alert('Please enter or import some text first!');
         return;
       }
 
-      localStorage.setItem('openrouter_key', apiKey);
-
       btn.disabled = true;
-      btn.innerText = '🤖 Free AI Writing Your Presentation...';
+      btn.innerText = '🤖 AI Writing Your Presentation...';
 
       try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'google/gemma-2-9b-it:free',
+            model: 'openrouter/auto',
             messages: [
               {
                 role: 'system',
