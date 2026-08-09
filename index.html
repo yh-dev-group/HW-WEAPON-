@@ -109,7 +109,7 @@
       }
     }
 
-    // 2. Free AI Generator Engine (With Automatic Fallback Routing)
+    // 2. Free AI Generator Engine (Using Dedicated Active Free Tier Endpoints)
     async function generateSlides() {
       const text = document.getElementById('inputText').value;
       const btn = document.getElementById('generateBtn');
@@ -131,13 +131,12 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            // Uses robust active free models with auto fallback
             models: [
-              'meta-llama/llama-3.3-70b-instruct:free',
-              'mistralai/mistral-7b-instruct:free',
-              'qwen/qwen-2.5-72b-instruct:free'
+              'stepfun/step-1-flash:free',
+              'deepseek/deepseek-r1:free',
+              'google/gemma-2-9b-it:free'
             ],
-            max_tokens: 1500,
+            max_tokens: 1200,
             messages: [
               {
                 role: 'system',
