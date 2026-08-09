@@ -109,7 +109,7 @@
       }
     }
 
-    // 2. Free AI Generator Engine (Using Dedicated Active Free Tier Endpoints)
+    // 2. Free AI Generator Engine
     async function generateSlides() {
       const text = document.getElementById('inputText').value;
       const btn = document.getElementById('generateBtn');
@@ -131,11 +131,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            models: [
-              'stepfun/step-1-flash:free',
-              'deepseek/deepseek-r1:free',
-              'google/gemma-2-9b-it:free'
-            ],
+            model: 'deepseek/deepseek-r1:free',
             max_tokens: 1200,
             messages: [
               {
@@ -156,7 +152,10 @@
           throw new Error(data.error.message || JSON.stringify(data.error));
         }
 
-        const markdownResult = data.choices[0].message.content;
+        let markdownResult = data.choices[0].message.content;
+
+        // Remove DeepSeek-R1 reasoning tags if present (<think>...</think>)
+        markdownResult = markdownResult.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
         // Clean raw markdown output
         window.currentRawMarkdown = markdownResult.replace(/```markdown/gi, '').replace(/```/g, '').trim();
