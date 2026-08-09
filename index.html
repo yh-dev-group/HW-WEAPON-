@@ -109,7 +109,7 @@
       }
     }
 
-    // 2. Free AI Generator Engine (via OpenRouter Free Auto-Router)
+    // 2. Free AI Generator Engine
     async function generateSlides() {
       const text = document.getElementById('inputText').value;
       const btn = document.getElementById('generateBtn');
@@ -131,7 +131,8 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'openrouter/auto',
+            model: 'google/gemma-2-9b-it:free',
+            max_tokens: 1500, // Explicitly limits requested tokens to stay within free budget!
             messages: [
               {
                 role: 'system',
